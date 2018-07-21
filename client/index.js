@@ -13,7 +13,8 @@ const card = (post) =>{
                <!-- <a class="waves-effect waves-light btn modal-trigger js-remove2" data-target="confirm" data-id2="${post._id}" data-ti2="${post.title}" id="deleteMe">DeleteMe</a> -->
                <!-- <a class="waves-effect waves-light btn modal-trigger js-remove2" data-target="confirm" data-id2="${post._id}" data-ti2="${post.title}" id="deleteMe">DeleteMe</a> -->
                
-                <button class="btn btn-small red modal-trigger js-remove2"  data-target="confirm" data-id2="${post._id}" data-ti2="${post.title}" id="deleteMe">DELETE</button>
+                <!--<button class="btn btn-small red modal-trigger js-remove2"  data-target="confirm" data-id2="${post._id}" data-ti2="${post.title}" id="deleteMe">DELETE</button>-->
+                <button class="btn btn-small red modal-trigger js-remove2"  data-target="confirm" data-id2="${post._id}" data-ti2="${post.title}">DELETE</button>
             
                 <!--<button class="btn btn-small red js-remove" data-id="${post._id}"> 
                     <!--<i class="material icons">Delete</i>-->
@@ -62,11 +63,21 @@ document.addEventListener("DOMContentLoaded",()=>{
             renderPosts(posts);
         });
     //M.AutoInit();
-    modal = M.Modal.init(document.querySelector(".modal"));
-    modalConfirm = M.Modal.init(document.querySelector("#confirm"),({opacity:0.9,inDuration:250}));
+
+    //ver two
+    //elems = [];
+    elems = document.querySelectorAll(".modal");
+    //elems[1].options({opacity:0.9,inDuration:250});
+    myModal = M.Modal.init(elems);
+    //myModal[1].options({opacity:0.9,inDuration:250});
+
+    //ver one
+    //modal = M.Modal.init(document.querySelector(".modal"));
+    //modalConfirm = M.Modal.init(document.querySelector("#confirm"),({opacity:0.9,inDuration:250}));
 
     document.querySelector("#createPost").addEventListener("click", onCreatePost); //on modal form
          document.querySelector("#posts").addEventListener("click", onDeletePost); //v pole gde vse posti
+    //document.querySelector("#agree").addEventListener("click",onDeletePost);
          //document.querySelector("#confirm").addEventListener("click", onDconf); //v pole gde vse posti
          //document.querySelector("#confirm").addEventListener("click", onDconf); //v pole gde vse posti
          //document.querySelector("#posts").addEventListener("click", onDeletePost2); //v pole gde vse posti
@@ -95,7 +106,7 @@ function onCreatePost() {
             posts.push(post);
             renderPosts(posts);
         });
-        modal.close(); //method from materialize
+        myModal[0].close(); //method from materialize
         //Materialize.updateTextFields();
         elText.value="";
         elTitle.value="";
@@ -119,13 +130,28 @@ function onDeletePost(event) {
         }
     }
     if(event.target.classList.contains("js-remove2")){
+        //console.log(myModal[1]);
+        //console.log(elems);
         let id2 = event.target.getAttribute("data-id2");
         let ti2 = event.target.getAttribute("data-ti2");
 
-        console.log(id2,ti2);
+        //console.log(id2,ti2);
 
-        datamy =  document.querySelector("#datamy");
+        //document.querySelector("js-remove3").addEventListener("click",()=> alert("clicked agree!"));
+        //myModal[1].querySelector("js-remove3").addEventListener("click",()=> alert("clicked agree!"));
+        datamy = document.querySelector("#datamy");
         datamy.innerText = ti2;
+        document.querySelector("#agree").addEventListener("click", (()=> {
+                datamy.innerText = "";
+                PostApi.remove(id2).then(() => {
+                    const postIndex = posts.findIndex(post => post._id === id2);
+                    posts.splice(postIndex, 1); //was slice! warning!!!
+                    renderPosts(posts);
+                })
+            }
+        ));
+        myModal[1].close();
+        /*
         agreeButton = document.querySelector("#agree");
         agreeButton.onclick = ()=> {
             PostApi.remove(id2).then(()=>{
@@ -133,7 +159,7 @@ function onDeletePost(event) {
                 posts.splice(postIndex,1); //was slice! warning!!!
                 renderPosts(posts);
             })
-        };
+        };*/
 
 
     }
